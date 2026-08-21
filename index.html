@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>교회와 왕, 무엇을 주고받았을까?</title>
+<style>
+  :root{
+    --cream:#fff9f0;
+    --coral:#ff8a65;
+    --coral-dark:#ef6c50;
+    --yellow:#ffd166;
+    --ink:#3a2e2c;
+    --sub:#8a7a72;
+    --card:#ffffff;
+    --line:#f0e4d8;
+    --good:#4caf7d;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:linear-gradient(180deg,var(--cream) 0%, #fff 400px);
+    color:var(--ink);
+    font-size:17px;
+    line-height:1.55;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .header{
+    background:linear-gradient(120deg,var(--coral) 0%, var(--yellow) 100%);
+    color:#fff;
+    padding:28px 20px 34px;
+    text-align:center;
+    border-radius:0 0 28px 28px;
+    box-shadow:0 6px 18px rgba(239,108,80,0.18);
+  }
+  .header h1{margin:0 0 6px; font-size:21px; font-weight:800;}
+  .header p{margin:0; font-size:14.5px; opacity:0.95;}
+  .wrap{max-width:640px; margin:0 auto; padding:20px 16px 80px;}
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadeUp .35s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:22px 20px;
+    margin-bottom:16px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.04);
+  }
+  .badge-chip{
+    display:inline-block;
+    background:#fff1e6;
+    color:var(--coral-dark);
+    font-size:13px;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:100px;
+    margin-bottom:10px;
+  }
+  h2{font-size:19px; margin:0 0 10px; font-weight:800;}
+  h3{font-size:16px; margin:16px 0 8px; font-weight:700;}
+  p{color:var(--ink);}
+  .sub{color:var(--sub); font-size:14.5px;}
+
+  label{display:block; font-weight:700; font-size:14.5px; margin:14px 0 6px;}
+  input[type=text], input[type=tel]{
+    width:100%;
+    padding:14px 16px;
+    font-size:17px;
+    border:2px solid var(--line);
+    border-radius:14px;
+    background:#fffdf9;
+    min-height:48px;
+  }
+  input:focus{outline:none; border-color:var(--coral);}
+
+  textarea{
+    width:100%;
+    min-height:80px;
+    padding:14px 16px;
+    font-size:16px;
+    border:2px solid var(--line);
+    border-radius:14px;
+    background:#fffdf9;
+    resize:vertical;
+    font-family:inherit;
+    line-height:1.5;
+  }
+  textarea:focus{outline:none; border-color:var(--coral);}
+
+  .btn{
+    display:block;
+    width:100%;
+    padding:15px 20px;
+    font-size:16.5px;
+    font-weight:800;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    min-height:50px;
+    margin-top:16px;
+    transition:transform .1s ease, opacity .15s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--coral); color:#fff; box-shadow:0 4px 12px rgba(255,138,101,0.35);}
+  .btn-primary:disabled{background:#f0d9cd; color:#fff; cursor:not-allowed; box-shadow:none;}
+  .btn-outline{background:#fff; color:var(--coral-dark); border:2px solid var(--coral);}
+  .btn-ghost{background:#f5efe8; color:var(--ink);}
+
+  /* 역할 카드 선택 */
+  .role-pick{display:flex; flex-direction:column; gap:14px; margin:14px 0;}
+  .role-card{
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    cursor:pointer;
+    background:#fdfaf5;
+  }
+  .role-card.selected{border-color:var(--coral); background:#fff6f0; box-shadow:0 4px 12px rgba(255,138,101,0.2);}
+  .role-card .role-title{font-weight:800; font-size:17px; margin-bottom:6px;}
+  .role-card .role-desc{font-size:14px; color:var(--sub);}
+  .role-card .role-quote{
+    font-size:13.5px; color:var(--ink); margin-top:10px;
+    padding:10px 12px; background:#fff; border-radius:10px;
+    border-left:3px solid var(--coral); line-height:1.5; font-style:italic;
+  }
+
+  .info-box{
+    background:#fff8ee;
+    border-left:4px solid var(--yellow);
+    padding:12px 14px;
+    border-radius:0 12px 12px 0;
+    font-size:14px;
+    color:var(--sub);
+    margin:14px 0;
+  }
+  .info-box b{color:var(--ink);}
+
+  .have-lack{display:flex; gap:10px; margin-top:12px;}
+  .have-lack > div{flex:1; border-radius:14px; padding:12px; font-size:13.5px;}
+  .have-box{background:#eef7f0; color:#2f6b46;}
+  .lack-box{background:#fdeeee; color:#a13a3a;}
+  .have-lack b{display:block; margin-bottom:4px; font-size:12.5px;}
+
+  .compare-block{
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:14px 16px;
+    margin-bottom:12px;
+  }
+  .compare-block .who{font-weight:800; font-size:13.5px; color:var(--coral-dark); margin-bottom:6px;}
+  .compare-block .txt{font-size:15px; white-space:pre-wrap;}
+
+  .same-diff{display:flex; gap:10px; margin:14px 0;}
+  .same-diff button{
+    flex:1; padding:14px; border-radius:14px; border:2px solid var(--line);
+    background:#fff; font-weight:800; font-size:15px; cursor:pointer; min-height:50px;
+  }
+  .same-diff button.active{border-color:var(--coral); background:#fff6f0; color:var(--coral-dark);}
+
+  .result-timeline{border-left:3px solid var(--coral); padding-left:16px; margin:16px 0;}
+  .result-item{margin-bottom:14px;}
+  .result-item .yr{font-weight:800; color:var(--coral-dark); font-size:14px;}
+  .result-item .desc{font-size:14.5px; margin-top:2px;}
+
+  .final-msg{
+    background:linear-gradient(120deg,#fff1e6,#fff8ee);
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    margin-top:8px;
+  }
+  .final-msg .rank{font-size:28px; margin-bottom:6px;}
+
+  .progress-dots{display:flex; justify-content:center; gap:6px; margin:14px 0 4px;}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--line);}
+  .dot.active{background:var(--coral);}
+
+  .waiting-box{
+    text-align:center;
+    padding:30px 10px;
+  }
+  .waiting-box .spin{font-size:30px; margin-bottom:10px;}
+
+  .hint-toggle{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:1px solid var(--line);
+    color:var(--sub);
+    font-size:13px;
+    font-weight:700;
+    padding:8px 14px;
+    border-radius:100px;
+    cursor:pointer;
+    margin:4px 0 0;
+  }
+  .hint-box{
+    display:none;
+    background:#fff8ee;
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:13.5px;
+    color:var(--sub);
+    margin-top:8px;
+    line-height:1.6;
+  }
+  .hint-box.open{display:block;}
+  .hint-box p{color:var(--sub); margin:4px 0;}
+
+  .next-step-note{
+    background:#f5efe8;
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:13.5px;
+    color:var(--sub);
+    margin-top:14px;
+  }
+
+  @media (min-width:760px){
+    body{font-size:17.5px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>교회와 왕, 무엇을 주고받았을까?</h1>
+  <p>주제13 1차시 · 2학년 세계사</p>
+</div>
+
+<div class="wrap">
+
+  <!-- 화면 0: 로그인 -->
+  <div class="screen active" id="screen-start">
+    <div class="card">
+      <span class="badge-chip">시작하기</span>
+      <h2>먼저 정보를 입력해줘</h2>
+      <p class="sub">짝이랑 미리 정한 <b>조 번호</b>를 똑같이 입력해야 나중에 짝의 답을 볼 수 있어.</p>
+
+      <label>학번</label>
+      <input type="tel" id="studentId" inputmode="numeric" placeholder="예: 20315 (2학년 3반 15번)">
+
+      <label>이름</label>
+      <input type="text" id="studentName" placeholder="이름 입력">
+
+      <label>조 번호 (짝이랑 똑같이!)</label>
+      <input type="text" id="groupId" placeholder="예: 7">
+
+      <button class="btn btn-primary" id="startBtn" disabled>시작하기</button>
+    </div>
+  </div>
+
+  <!-- 화면 1: 질문 제시 -->
+  <div class="screen" id="screen-question">
+    <div class="card">
+      <span class="badge-chip">핵심 질문</span>
+      <h2>서로마가 무너진 뒤, 교회랑 왕들은 각자 뭐가 부족했을까?</h2>
+      <p>476년, 서로마 제국이 멸망했어. 그 자리엔 여러 게르만 왕국들이 난립했고,
+      크리스트교(교회)는 이미 유럽 곳곳에 퍼져 있었지만 지켜줄 힘은 없었어.</p>
+      <p>근데 그중 <b>프랑크 왕국</b>이라는 나라가 유독 교회랑 가까워지더니, 결국 다른
+      게르만 왕국들을 다 제치고 서유럽의 중심이 됐어.</p>
+      <p class="sub">이상하지 않아? 교회가 그냥 "신앙"만으로 프랑크 왕국이랑 손잡았을까,
+      아니면 서로 뭔가 주고받을 게 있었을까? 다음 화면에서 직접 역할을 맡아서 생각해보자.</p>
+      <button class="btn btn-primary" id="toRoleBtn">역할 정하러 가기</button>
+    </div>
+  </div>
+
+  <!-- 화면 2: 역할 선택 -->
+  <div class="screen" id="screen-role">
+    <div class="card">
+      <h2>선생님이 나눠준 카드대로 역할을 골라줘</h2>
+      <p class="sub">실물 카드에 적힌 대로 눌러서 선택해. (내가 가진 것 / 부족한 것이 뜰 거야)<br>
+      아래 대사는 상황을 이해하기 쉽게 만든 <b>가상의 대사</b>야 (실제 기록된 말은 아님).</p>
+
+      <div class="role-pick">
+        <div class="role-card" id="role-pope" data-role="교황">
+          <div class="role-title">⛪ 나는 교황이야</div>
+          <div class="role-desc">로마 가톨릭교회의 수장</div>
+          <div class="role-quote">"우리 교회는 유럽 곳곳에 있지만… 정작 우리를 지켜줄 군사력이 없어.
+          게다가 비잔티움 황제는 자꾸 나를 자기 밑에 두려고 해."</div>
+        </div>
+        <div class="role-card" id="role-king" data-role="프랑크 왕">
+          <div class="role-title">👑 나는 프랑크 왕이야</div>
+          <div class="role-desc">카롤루스 마르텔·카롤루스 대제</div>
+          <div class="role-quote">"나는 이슬람 세력도 막아냈고 땅도 넓혔어. 근데 사람들이
+          날 진짜 정당한 왕(황제)으로 인정해줄지는 모르겠어."</div>
+        </div>
+      </div>
+
+      <div id="roleInfo" style="display:none;">
+        <div class="have-lack" id="haveLackBox"></div>
+      </div>
+
+      <button class="btn btn-primary" id="toWriteBtn" disabled>내 판단 쓰러 가기</button>
+    </div>
+  </div>
+
+  <!-- 화면 3: 개별 판단 -->
+  <div class="screen" id="screen-write">
+    <div class="card">
+      <span class="badge-chip" id="myRoleBadge">역할</span>
+      <h2>내가 상대한테 뭘 주고, 뭘 받을 것 같아?</h2>
+
+      <div class="have-lack" id="writeHaveLackBox"></div>
+
+      <p class="sub" style="margin-top:14px;">근데… 이걸로 진짜 상대가 만족할까? ( 응, 만족할 듯 / 뭔가 부족할 듯 )
+      한번 생각해보고 아래 세 칸을 채워봐. 짝이 아직 못 봐도 되니까 솔직하게 네 생각대로 써!</p>
+
+      <button type="button" class="hint-toggle" id="hintToggle">💡 막히면 힌트 보기</button>
+      <div class="hint-box" id="hintBox">
+        <p><b>💬 비유로 생각해보면:</b> 축구 잘하는 친구가 반장 선거에 나갔는데 표가 부족해.
+        너는 반에서 인기가 많고. 네가 "내가 너 뽑을 사람들 모아줄게" 하면, 그 친구는
+        너한테 뭘 해줄 수 있을까? (같이 축구 가르쳐주기? 매점 사주기?)</p>
+        <p id="hintRoleSpecific"></p>
+        <p>정답은 없어. "이걸 주면 상대가 좋아할 것 같다"는 네 나름의 판단이면 충분해.</p>
+      </div>
+
+      <label>내가 상대(반대 역할)에게 줄 수 있는 것</label>
+      <textarea id="giveTxt" placeholder="예: 나는 상대에게 ___을 줄 수 있을 것 같다."></textarea>
+
+      <label>그 대가로 내가 상대에게 받고 싶은 것</label>
+      <textarea id="wantTxt" placeholder="예: 대신 나는 ___을 받고 싶다."></textarea>
+
+      <label>왜 그렇게 생각했어?</label>
+      <textarea id="whyTxt" placeholder="예: 왜냐하면 나는 ___이 부족한데, 상대는 그걸 갖고 있으니까."></textarea>
+
+      <div class="next-step-note">
+        📌 제출하면 <b>짝의 답과 비교하는 화면</b>으로 넘어가. 짝이 아직 다 안 썼으면 잠깐
+        기다리는 화면이 뜰 거야 — 그땐 조용히 기다리거나, 짝한테 다 썼는지 살짝 확인해줘.
+      </div>
+
+      <button class="btn btn-primary" id="submitJudgmentBtn" disabled>제출하고 짝 답 보러 가기</button>
+    </div>
+  </div>
+
+  <!-- 화면 4: 짝 기다리는 중 -->
+  <div class="screen" id="screen-waiting">
+    <div class="card waiting-box">
+      <div class="spin">⏳</div>
+      <h3>짝이 아직 제출 안 했나봐</h3>
+      <p class="sub">짝도 다 쓰고 제출하면 아래 버튼을 눌러서 다시 확인해봐.<br>
+      기다리는 동안 조용히 있거나, 짝한테 "다 썼어?" 살짝 물어봐도 좋아.</p>
+      <button class="btn btn-outline" id="refreshBtn">다시 확인하기</button>
+    </div>
+  </div>
+
+  <!-- 화면 5: 비교 + 실제 역사 + 확장질문 -->
+  <div class="screen" id="screen-compare">
+    <div class="card">
+      <h2>내 답 vs 짝 답</h2>
+      <div class="compare-block" id="myAnswerBlock"></div>
+      <div class="compare-block" id="partnerAnswerBlock"></div>
+
+      <h3>같은 생각이었어, 다른 생각이었어?</h3>
+      <div class="same-diff">
+        <button id="btnSame" data-v="같다">비슷했어</button>
+        <button id="btnDiff" data-v="다르다">달랐어</button>
+      </div>
+      <div id="diffReasonWrap" style="display:none;">
+        <label>어떤 부분이 달랐어?</label>
+        <textarea id="diffReasonTxt" placeholder="짧게라도 적어줘"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge-chip">실제 역사</span>
+      <h2>실제로는 이런 거래가 있었어</h2>
+      <div class="result-timeline">
+        <div class="result-item">
+          <div class="yr">4~5세기</div>
+          <div class="desc">여러 게르만 왕국 중 프랑크 왕국만 일찍부터 로마 문화·크리스트교를 받아들여 다른 왕국들을 앞서갔다.</div>
+        </div>
+        <div class="result-item">
+          <div class="yr">732년</div>
+          <div class="desc">카롤루스 마르텔이 이슬람 세력을 물리쳐 서유럽 크리스트교 세계를 지켜냈다.</div>
+        </div>
+        <div class="result-item">
+          <div class="yr">이후</div>
+          <div class="desc">그의 아들이 왕이 되려 하자 교황이 즉위를 인정해줬고, 그 대가로 이탈리아 중부를 정복해 교황에게 바쳤다(교황령).</div>
+        </div>
+        <div class="result-item">
+          <div class="yr">800년</div>
+          <div class="desc">카롤루스 대제가 정복지에 교회를 세우고 땅을 더 바치자, 교황은 그를 서로마 제국 황제로 임명했다. (단, 비잔티움 제국은 이를 인정하지 않았다)</div>
+        </div>
+      </div>
+      <div class="info-box">
+        교회는 "군사력·보호"가 필요했고, 프랑크 왕은 "정통성(신의 인정)"이 필요했어.
+        신앙만으로 맺어진 관계가 아니라, 서로에게 없는 걸 채워주는 <b>정치적 거래</b>이기도 했던 거야.
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge-chip">확장 질문</span>
+      <h2>오늘날에도 이런 "주고받기" 본 적 있어?</h2>
+      <p class="sub">종교가 아니어도 괜찮아 — 정치인과 지지 세력, 기업과 정부처럼
+      서로 부족한 걸 채워주며 손잡는 모습, 떠오르는 거 있어?</p>
+      <textarea id="extendTxt" placeholder="짧게라도 한 가지 예를 적어봐"></textarea>
+
+      <button class="btn btn-primary" id="finalSubmitBtn" disabled>최종 제출하기</button>
+    </div>
+  </div>
+
+  <!-- 화면 6: 완료 -->
+  <div class="screen" id="screen-done">
+    <div class="card final-msg">
+      <div class="rank">🏰</div>
+      <div style="font-weight:800; font-size:16px;">활동 제출 완료</div>
+      <div class="sub" style="margin-top:4px;">선생님이 서술 내용을 확인할게.</div>
+    </div>
+
+    <div class="card">
+      <span class="badge-chip">패들렛에 옮겨 쓰기</span>
+      <h2>이 내용을 복사해서 패들렛에 붙여넣어줘</h2>
+      <textarea id="copyBox" readonly style="min-height:160px;"></textarea>
+      <button class="btn btn-primary" id="copyBtn">📋 복사하기</button>
+      <p class="sub" id="copyStatus" style="text-align:center; margin-top:8px; min-height:18px;"></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+ * CONFIG — 배포 시 이 두 값만 채우면 됨
+ * ════════════════════════════════════════════════════════ */
+const CONFIG = {
+  SHEET_WEBAPP_URL: "여기에_웹앱_URL_붙여넣기",   // backend_v7.gs 배포 URL (2학기 포털과 동일한 URL 재사용)
+  GAME_NAME: "주제13_교회와왕"                      // config.js CURRICULUM의 id와 반드시 일치
+};
+
+const ROLE_INFO = {
+  "교황": {
+    have: "종교적 권위, 유럽 전역에 퍼진 교회 네트워크",
+    lack: "군사력, 비잔티움 황제의 간섭에서 벗어날 힘",
+    hint: "너(교황)는 힘이 없어서 위험해. 근처에 힘이 센 상대가 '내가 너 지켜줄게' 하면 솔깃하지 않을까? 대신 넌 그 상대한테 뭘 해줄 수 있을까?"
+  },
+  "프랑크 왕": {
+    have: "군사력(이슬람 세력을 물리침), 넓은 영토",
+    lack: "왕위의 정통성, '신의 인정'",
+    hint: "너(프랑크 왕)는 힘은 있는데 사람들이 '진짜 정당한 왕'이라고 인정 안 해주면 불안하지 않을까? 그 인정을 해줄 수 있는 사람이 상대라면, 넌 상대한테 뭘 해줄 수 있을까?"
+  }
+};
+
+let selectedRole = null;
+let myAnswer = { give:"", want:"", why:"" };
+
+/* ── 화면 전환 ── */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ── 화면 0: 입력 검증 ── */
+const studentId = document.getElementById("studentId");
+const studentName = document.getElementById("studentName");
+const groupIdInput = document.getElementById("groupId");
+const startBtn = document.getElementById("startBtn");
+
+function checkStart(){
+  startBtn.disabled = !(studentId.value.trim() && studentName.value.trim() && groupIdInput.value.trim());
+}
+[studentId, studentName, groupIdInput].forEach(el=>el.addEventListener("input", checkStart));
+
+startBtn.addEventListener("click", ()=> showScreen("screen-question"));
+document.getElementById("toRoleBtn").addEventListener("click", ()=> showScreen("screen-role"));
+
+/* ── 화면 2: 역할 선택 ── */
+document.querySelectorAll(".role-card").forEach(card=>{
+  card.addEventListener("click", ()=>{
+    document.querySelectorAll(".role-card").forEach(c=>c.classList.remove("selected"));
+    card.classList.add("selected");
+    selectedRole = card.dataset.role;
+
+    const info = ROLE_INFO[selectedRole];
+    document.getElementById("roleInfo").style.display = "block";
+    document.getElementById("haveLackBox").innerHTML = `
+      <div class="have-box"><b>내가 가진 것</b>${info.have}</div>
+      <div class="lack-box"><b>내가 부족한 것</b>${info.lack}</div>
+    `;
+    document.getElementById("toWriteBtn").disabled = false;
+  });
+});
+
+document.getElementById("toWriteBtn").addEventListener("click", ()=>{
+  document.getElementById("myRoleBadge").textContent = "나는 " + selectedRole;
+  const info = ROLE_INFO[selectedRole];
+  document.getElementById("writeHaveLackBox").innerHTML = `
+    <div class="have-box"><b>내가 가진 것</b>${info.have}</div>
+    <div class="lack-box"><b>내가 부족한 것</b>${info.lack}</div>
+  `;
+  document.getElementById("hintRoleSpecific").textContent = info.hint;
+  showScreen("screen-write");
+});
+
+/* ── 힌트 토글 ── */
+document.getElementById("hintToggle").addEventListener("click", ()=>{
+  document.getElementById("hintBox").classList.toggle("open");
+});
+
+/* ── 화면 3: 개별 판단 검증 ── */
+const giveTxt = document.getElementById("giveTxt");
+const wantTxt = document.getElementById("wantTxt");
+const whyTxt = document.getElementById("whyTxt");
+const submitJudgmentBtn = document.getElementById("submitJudgmentBtn");
+
+function checkWrite(){
+  const ok = giveTxt.value.trim().length >= 8 &&
+             wantTxt.value.trim().length >= 8 &&
+             whyTxt.value.trim().length >= 8;
+  submitJudgmentBtn.disabled = !ok;
+}
+[giveTxt, wantTxt, whyTxt].forEach(el=>el.addEventListener("input", checkWrite));
+
+/* ── 1차 제출: 개별 판단 ── */
+submitJudgmentBtn.addEventListener("click", async ()=>{
+  submitJudgmentBtn.disabled = true;
+  submitJudgmentBtn.textContent = "제출 중...";
+
+  myAnswer = {
+    give: giveTxt.value.trim(),
+    want: wantTxt.value.trim(),
+    why: whyTxt.value.trim()
+  };
+  const judgmentText = `줄 것: ${myAnswer.give}\n받고 싶은 것: ${myAnswer.want}\n이유: ${myAnswer.why}`;
+
+  const payload = {
+    gameName: CONFIG.GAME_NAME,
+    studentId: studentId.value.trim(),
+    studentName: studentName.value.trim(),
+    groupId: groupIdInput.value.trim(),
+    choiceSummary: `역할: ${selectedRole}`,
+    diffSummary: "",
+    reflection: judgmentText,
+    choicesJson: JSON.stringify({
+      stage: "judgment",
+      role: selectedRole,
+      judgment: judgmentText
+    })
+  };
+
+  try{
+    if(CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0){
+      await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
+    }
+  }catch(err){
+    console.log("전송 실패(콘솔 확인용):", err);
+  }
+
+  document.getElementById("myAnswerBlock").innerHTML =
+    `<div class="who">나 (${selectedRole})</div><div class="txt">${escapeHtml(judgmentText)}</div>`;
+
+  fetchPartner();
+});
+
+/* ── 짝 답 조회 ── */
+async function fetchPartner(){
+  showScreen("screen-waiting");
+  document.getElementById("refreshBtn").disabled = false;
+  document.getElementById("refreshBtn").textContent = "다시 확인하기";
+
+  if(!(CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0)){
+    return; // URL 미설정 시 대기 화면에 머묾 (테스트 환경)
+  }
+
+  try{
+    const url = `${CONFIG.SHEET_WEBAPP_URL}?mode=group&gameName=${encodeURIComponent(CONFIG.GAME_NAME)}&groupId=${encodeURIComponent(groupIdInput.value.trim())}&studentId=${encodeURIComponent(studentId.value.trim())}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.result === "success" && data.partners && data.partners.length > 0){
+      const p = data.partners[0];
+      document.getElementById("partnerAnswerBlock").innerHTML =
+        `<div class="who">짝 (${escapeHtml(p.role)})</div><div class="txt">${escapeHtml(p.judgment)}</div>`;
+      showScreen("screen-compare");
+    }
+  }catch(err){
+    console.log("짝 답 조회 실패:", err);
+  }
+}
+document.getElementById("refreshBtn").addEventListener("click", fetchPartner);
+
+/* ── 화면 5: 같다/다르다 ── */
+let sameOrDiff = "";
+document.getElementById("btnSame").addEventListener("click", ()=>{
+  sameOrDiff = "같다";
+  document.getElementById("btnSame").classList.add("active");
+  document.getElementById("btnDiff").classList.remove("active");
+  document.getElementById("diffReasonWrap").style.display = "none";
+  checkFinal();
+});
+document.getElementById("btnDiff").addEventListener("click", ()=>{
+  sameOrDiff = "다르다";
+  document.getElementById("btnDiff").classList.add("active");
+  document.getElementById("btnSame").classList.remove("active");
+  document.getElementById("diffReasonWrap").style.display = "block";
+  checkFinal();
+});
+
+const diffReasonTxt = document.getElementById("diffReasonTxt");
+const extendTxt = document.getElementById("extendTxt");
+[diffReasonTxt, extendTxt].forEach(el=>el.addEventListener("input", checkFinal));
+
+function checkFinal(){
+  const diffOk = sameOrDiff === "같다" || (sameOrDiff === "다르다" && diffReasonTxt.value.trim().length >= 4);
+  const extendOk = extendTxt.value.trim().length >= 4;
+  document.getElementById("finalSubmitBtn").disabled = !(diffOk && extendOk && sameOrDiff);
+}
+
+/* ── 2차(최종) 제출 ── */
+document.getElementById("finalSubmitBtn").addEventListener("click", async ()=>{
+  const btn = document.getElementById("finalSubmitBtn");
+  btn.disabled = true;
+  btn.textContent = "제출 중...";
+
+  const finalReflection =
+    `[내 판단] 줄 것: ${myAnswer.give} / 받고 싶은 것: ${myAnswer.want} / 이유: ${myAnswer.why}\n` +
+    `[짝과 비교] ${sameOrDiff}${sameOrDiff==="다르다" ? " — " + diffReasonTxt.value.trim() : ""}\n` +
+    `[확장 질문] ${extendTxt.value.trim()}`;
+
+  const padletText =
+    `[주제13] 교회와 왕, 무엇을 주고받았을까?\n` +
+    `역할: ${selectedRole}\n\n` +
+    `내가 상대에게 줄 것: ${myAnswer.give}\n` +
+    `내가 상대에게 받고 싶은 것: ${myAnswer.want}\n` +
+    `이유: ${myAnswer.why}\n\n` +
+    `짝과 ${sameOrDiff === "다르다" ? "생각이 달랐다 — " + diffReasonTxt.value.trim() : "생각이 비슷했다"}\n\n` +
+    `오늘날 비슷한 사례: ${extendTxt.value.trim()}`;
+
+  const payload = {
+    gameName: CONFIG.GAME_NAME,
+    studentId: studentId.value.trim(),
+    studentName: studentName.value.trim(),
+    groupId: groupIdInput.value.trim(),
+    choiceSummary: `역할: ${selectedRole} / 짝과 ${sameOrDiff}`,
+    diffSummary: "",
+    reflection: finalReflection,
+    choicesJson: JSON.stringify({
+      stage: "final",
+      role: selectedRole,
+      sameOrDiff: sameOrDiff,
+      diffReason: diffReasonTxt.value.trim(),
+      extend: extendTxt.value.trim()
+    })
+  };
+
+  try{
+    if(CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0){
+      await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
+    }
+  }catch(err){
+    console.log("전송 실패(콘솔 확인용):", err);
+  }
+
+  showScreen("screen-done");
+  document.getElementById("copyBox").value = padletText;
+});
+
+/* ── 패들렛용 복사하기 ── */
+document.getElementById("copyBtn").addEventListener("click", async ()=>{
+  const box = document.getElementById("copyBox");
+  const statusEl = document.getElementById("copyStatus");
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(box.value);
+    }else{
+      box.removeAttribute("readonly");
+      box.focus();
+      box.select();
+      document.execCommand("copy");
+      box.setAttribute("readonly", "true");
+    }
+    statusEl.textContent = "✅ 복사됐어! 패들렛에 붙여넣기 해봐.";
+  }catch(err){
+    statusEl.textContent = "복사가 안 됐어. 직접 길게 눌러서 선택 후 복사해줘.";
+    box.removeAttribute("readonly");
+    box.focus();
+    box.select();
+  }
+});
+
+function escapeHtml(str){
+  return String(str)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/\n/g,"<br>");
+}
+</script>
+
+</body>
+</html>
