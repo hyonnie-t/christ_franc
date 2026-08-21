@@ -160,6 +160,23 @@
   }
   .same-diff button.active{border-color:var(--coral); background:#fff6f0; color:var(--coral-dark);}
 
+  .match-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .match-side{
+    flex:1;
+    background:#fdfaf5;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+  }
+  .match-tag{font-size:12px; font-weight:800; color:var(--sub); margin-bottom:4px;}
+  .match-row .match-txt{font-size:14px; line-height:1.4;}
+  .match-arrow{font-size:16px; color:var(--coral); flex-shrink:0;}
+
   .result-timeline{border-left:3px solid var(--coral); padding-left:16px; margin:16px 0;}
   .result-item{margin-bottom:14px;}
   .result-item .yr{font-weight:800; color:var(--coral-dark); font-size:14px;}
@@ -351,19 +368,49 @@
   <!-- 화면 5: 비교 + 실제 역사 + 확장질문 -->
   <div class="screen" id="screen-compare">
     <div class="card">
+      <div class="info-box">
+        📢 <b>짝이랑 소리 내어 확인해보기</b> — 아래 두 사람 답을 짝이랑 번갈아 소리 내서
+        읽어봐. "나는 너한테 ○○을 줄게" / "나는 ○○을 받고 싶어" 이렇게.
+      </div>
       <h2>내 답 vs 짝 답</h2>
       <div class="compare-block" id="myAnswerBlock"></div>
       <div class="compare-block" id="partnerAnswerBlock"></div>
+    </div>
 
-      <h3>같은 생각이었어, 다른 생각이었어?</h3>
+    <div class="card">
+      <h2>거래가 맞아떨어질까?</h2>
+      <p class="sub">역할이 다르니까 "생각이 같다/다르다"가 아니라, <b>서로 원하는 게 맞아떨어지는지</b>를 봐야 해.</p>
+
+      <div class="match-row">
+        <div class="match-side">
+          <div class="match-tag">내가 줄 것</div>
+          <div class="match-txt" id="matchRow1My"></div>
+        </div>
+        <div class="match-arrow">↕</div>
+        <div class="match-side">
+          <div class="match-tag">짝이 받고 싶어하는 것</div>
+          <div class="match-txt" id="matchRow1Partner"></div>
+        </div>
+      </div>
+      <div class="match-row">
+        <div class="match-side">
+          <div class="match-tag">내가 받고 싶은 것</div>
+          <div class="match-txt" id="matchRow2My"></div>
+        </div>
+        <div class="match-arrow">↕</div>
+        <div class="match-side">
+          <div class="match-tag">짝이 줄 것</div>
+          <div class="match-txt" id="matchRow2Partner"></div>
+        </div>
+      </div>
+
+      <h3>이 거래, 성사될 것 같아?</h3>
       <div class="same-diff">
-        <button id="btnSame" data-v="같다">비슷했어</button>
-        <button id="btnDiff" data-v="다르다">달랐어</button>
+        <button id="btnMatch" data-v="성사될 것 같다">성사될 것 같아</button>
+        <button id="btnNoMatch" data-v="안 될 것 같다">안 될 것 같아</button>
       </div>
-      <div id="diffReasonWrap" style="display:none;">
-        <label>어떤 부분이 달랐어?</label>
-        <textarea id="diffReasonTxt" placeholder="짧게라도 적어줘"></textarea>
-      </div>
+      <label>왜 그렇게 생각했어? (꼭 적어줘)</label>
+      <textarea id="matchReasonTxt" placeholder="예: 내가 주려는 거랑 짝이 원하는 게 얼추 맞아서 / 서로 원하는 게 완전히 달라서"></textarea>
     </div>
 
     <div class="card">
@@ -428,7 +475,7 @@
  * CONFIG — 배포 시 이 두 값만 채우면 됨
  * ════════════════════════════════════════════════════════ */
 const CONFIG = {
-  SHEET_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbyXSjCfWY_HiZFqW_OBR-FQDoIfF1z_STqyKWUI31MacHeY3u7hbirFSFDvW-5yuUHaJQ/exec",   // backend_v7.gs 배포 URL (2학기 포털과 동일한 URL 재사용)
+  SHEET_WEBAPP_URL: "여기에_웹앱_URL_붙여넣기",   // backend_v7.gs 배포 URL (2학기 포털과 동일한 URL 재사용)
   GAME_NAME: "주제13_교회와왕"                      // config.js CURRICULUM의 id와 반드시 일치
 };
 
@@ -526,21 +573,18 @@ submitJudgmentBtn.addEventListener("click", async ()=>{
     want: wantTxt.value.trim(),
     why: whyTxt.value.trim()
   };
-  const judgmentText = `줄 것: ${myAnswer.give}\n받고 싶은 것: ${myAnswer.want}\n이유: ${myAnswer.why}`;
+  const judgmentText = `줄 것: ${myAnswer.give}\n받고 싶은 것: ${myAnswer.want}\n이유: ${myAnswer.why}`; // 콘솔 로그용 참고 텍스트
 
   const payload = {
+    stage: "judgment",
     gameName: CONFIG.GAME_NAME,
     studentId: studentId.value.trim(),
     studentName: studentName.value.trim(),
     groupId: groupIdInput.value.trim(),
-    choiceSummary: `역할: ${selectedRole}`,
-    diffSummary: "",
-    reflection: judgmentText,
-    choicesJson: JSON.stringify({
-      stage: "judgment",
-      role: selectedRole,
-      judgment: judgmentText
-    })
+    role: selectedRole,
+    give: myAnswer.give,
+    want: myAnswer.want,
+    why: myAnswer.why
   };
 
   try{
@@ -551,11 +595,10 @@ submitJudgmentBtn.addEventListener("click", async ()=>{
     console.log("전송 실패(콘솔 확인용):", err);
   }
 
-  document.getElementById("myAnswerBlock").innerHTML =
-    `<div class="who">나 (${selectedRole})</div><div class="txt">${escapeHtml(judgmentText)}</div>`;
-
   fetchPartner();
 });
+
+let partnerData = null;
 
 /* ── 짝 답 조회 ── */
 async function fetchPartner(){
@@ -572,9 +615,8 @@ async function fetchPartner(){
     const res = await fetch(url);
     const data = await res.json();
     if(data.result === "success" && data.partners && data.partners.length > 0){
-      const p = data.partners[0];
-      document.getElementById("partnerAnswerBlock").innerHTML =
-        `<div class="who">짝 (${escapeHtml(p.role)})</div><div class="txt">${escapeHtml(p.judgment)}</div>`;
+      partnerData = data.partners[0];
+      renderCompareScreen();
       showScreen("screen-compare");
     }
   }catch(err){
@@ -583,31 +625,41 @@ async function fetchPartner(){
 }
 document.getElementById("refreshBtn").addEventListener("click", fetchPartner);
 
-/* ── 화면 5: 같다/다르다 ── */
-let sameOrDiff = "";
-document.getElementById("btnSame").addEventListener("click", ()=>{
-  sameOrDiff = "같다";
-  document.getElementById("btnSame").classList.add("active");
-  document.getElementById("btnDiff").classList.remove("active");
-  document.getElementById("diffReasonWrap").style.display = "none";
+function renderCompareScreen(){
+  document.getElementById("myAnswerBlock").innerHTML =
+    `<div class="who">나 (${selectedRole})</div><div class="txt">${escapeHtml(`줄 것: ${myAnswer.give}\n받고 싶은 것: ${myAnswer.want}\n이유: ${myAnswer.why}`)}</div>`;
+  document.getElementById("partnerAnswerBlock").innerHTML =
+    `<div class="who">짝 (${escapeHtml(partnerData.role)})</div><div class="txt">${escapeHtml(`줄 것: ${partnerData.give}\n받고 싶은 것: ${partnerData.want}\n이유: ${partnerData.why}`)}</div>`;
+
+  document.getElementById("matchRow1My").textContent = myAnswer.give || "(내용 없음)";
+  document.getElementById("matchRow1Partner").textContent = partnerData.want || "(내용 없음)";
+  document.getElementById("matchRow2My").textContent = myAnswer.want || "(내용 없음)";
+  document.getElementById("matchRow2Partner").textContent = partnerData.give || "(내용 없음)";
+}
+
+/* ── 화면 5: 거래 성사 여부 판단 ── */
+let tradeMatch = "";
+document.getElementById("btnMatch").addEventListener("click", ()=>{
+  tradeMatch = "성사될 것 같다";
+  document.getElementById("btnMatch").classList.add("active");
+  document.getElementById("btnNoMatch").classList.remove("active");
   checkFinal();
 });
-document.getElementById("btnDiff").addEventListener("click", ()=>{
-  sameOrDiff = "다르다";
-  document.getElementById("btnDiff").classList.add("active");
-  document.getElementById("btnSame").classList.remove("active");
-  document.getElementById("diffReasonWrap").style.display = "block";
+document.getElementById("btnNoMatch").addEventListener("click", ()=>{
+  tradeMatch = "안 될 것 같다";
+  document.getElementById("btnNoMatch").classList.add("active");
+  document.getElementById("btnMatch").classList.remove("active");
   checkFinal();
 });
 
-const diffReasonTxt = document.getElementById("diffReasonTxt");
+const matchReasonTxt = document.getElementById("matchReasonTxt");
 const extendTxt = document.getElementById("extendTxt");
-[diffReasonTxt, extendTxt].forEach(el=>el.addEventListener("input", checkFinal));
+[matchReasonTxt, extendTxt].forEach(el=>el.addEventListener("input", checkFinal));
 
 function checkFinal(){
-  const diffOk = sameOrDiff === "같다" || (sameOrDiff === "다르다" && diffReasonTxt.value.trim().length >= 4);
+  const reasonOk = matchReasonTxt.value.trim().length >= 6;
   const extendOk = extendTxt.value.trim().length >= 4;
-  document.getElementById("finalSubmitBtn").disabled = !(diffOk && extendOk && sameOrDiff);
+  document.getElementById("finalSubmitBtn").disabled = !(tradeMatch && reasonOk && extendOk);
 }
 
 /* ── 2차(최종) 제출 ── */
@@ -618,7 +670,8 @@ document.getElementById("finalSubmitBtn").addEventListener("click", async ()=>{
 
   const finalReflection =
     `[내 판단] 줄 것: ${myAnswer.give} / 받고 싶은 것: ${myAnswer.want} / 이유: ${myAnswer.why}\n` +
-    `[짝과 비교] ${sameOrDiff}${sameOrDiff==="다르다" ? " — " + diffReasonTxt.value.trim() : ""}\n` +
+    `[짝 판단] 줄 것: ${partnerData.give} / 받고 싶은 것: ${partnerData.want}\n` +
+    `[거래 성사 판단] ${tradeMatch} — ${matchReasonTxt.value.trim()}\n` +
     `[확장 질문] ${extendTxt.value.trim()}`;
 
   const padletText =
@@ -627,7 +680,7 @@ document.getElementById("finalSubmitBtn").addEventListener("click", async ()=>{
     `내가 상대에게 줄 것: ${myAnswer.give}\n` +
     `내가 상대에게 받고 싶은 것: ${myAnswer.want}\n` +
     `이유: ${myAnswer.why}\n\n` +
-    `짝과 ${sameOrDiff === "다르다" ? "생각이 달랐다 — " + diffReasonTxt.value.trim() : "생각이 비슷했다"}\n\n` +
+    `이 거래는 ${tradeMatch} — ${matchReasonTxt.value.trim()}\n\n` +
     `오늘날 비슷한 사례: ${extendTxt.value.trim()}`;
 
   const payload = {
@@ -635,14 +688,14 @@ document.getElementById("finalSubmitBtn").addEventListener("click", async ()=>{
     studentId: studentId.value.trim(),
     studentName: studentName.value.trim(),
     groupId: groupIdInput.value.trim(),
-    choiceSummary: `역할: ${selectedRole} / 짝과 ${sameOrDiff}`,
+    choiceSummary: `역할: ${selectedRole} / 거래 ${tradeMatch}`,
     diffSummary: "",
     reflection: finalReflection,
     choicesJson: JSON.stringify({
       stage: "final",
       role: selectedRole,
-      sameOrDiff: sameOrDiff,
-      diffReason: diffReasonTxt.value.trim(),
+      tradeMatch: tradeMatch,
+      matchReason: matchReasonTxt.value.trim(),
       extend: extendTxt.value.trim()
     })
   };
