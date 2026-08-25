@@ -144,14 +144,15 @@
   .lack-box{background:#fdeeee; color:#a13a3a;}
   .have-lack b{display:block; margin-bottom:4px; font-size:12.5px;}
 
-  .compare-block{
-    border:2px solid var(--line);
+  .reveal-block{
+    background:#fff8ee;
     border-radius:16px;
-    padding:14px 16px;
-    margin-bottom:12px;
+    padding:16px;
+    margin:14px 0;
+    font-size:14.5px;
+    line-height:1.6;
   }
-  .compare-block .who{font-weight:800; font-size:13.5px; color:var(--coral-dark); margin-bottom:6px;}
-  .compare-block .txt{font-size:15px; white-space:pre-wrap;}
+  .reveal-block b{color:var(--coral-dark);}
 
   .same-diff{display:flex; gap:10px; margin:14px 0;}
   .same-diff button{
@@ -159,23 +160,6 @@
     background:#fff; font-weight:800; font-size:15px; cursor:pointer; min-height:50px;
   }
   .same-diff button.active{border-color:var(--coral); background:#fff6f0; color:var(--coral-dark);}
-
-  .match-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-bottom:12px;
-  }
-  .match-side{
-    flex:1;
-    background:#fdfaf5;
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:10px 12px;
-  }
-  .match-tag{font-size:12px; font-weight:800; color:var(--sub); margin-bottom:4px;}
-  .match-row .match-txt{font-size:14px; line-height:1.4;}
-  .match-arrow{font-size:16px; color:var(--coral); flex-shrink:0;}
 
   .result-timeline{border-left:3px solid var(--coral); padding-left:16px; margin:16px 0;}
   .result-item{margin-bottom:14px;}
@@ -190,16 +174,6 @@
     margin-top:8px;
   }
   .final-msg .rank{font-size:28px; margin-bottom:6px;}
-
-  .progress-dots{display:flex; justify-content:center; gap:6px; margin:14px 0 4px;}
-  .dot{width:8px; height:8px; border-radius:50%; background:var(--line);}
-  .dot.active{background:var(--coral);}
-
-  .waiting-box{
-    text-align:center;
-    padding:30px 10px;
-  }
-  .waiting-box .spin{font-size:30px; margin-bottom:10px;}
 
   .hint-toggle{
     display:inline-flex;
@@ -256,16 +230,12 @@
     <div class="card">
       <span class="badge-chip">시작하기</span>
       <h2>먼저 정보를 입력해줘</h2>
-      <p class="sub">짝이랑 미리 정한 <b>조 번호</b>를 똑같이 입력해야 나중에 짝의 답을 볼 수 있어.</p>
 
       <label>학번</label>
       <input type="tel" id="studentId" inputmode="numeric" placeholder="예: 20315 (2학년 3반 15번)">
 
       <label>이름</label>
       <input type="text" id="studentName" placeholder="이름 입력">
-
-      <label>조 번호 (짝이랑 똑같이!)</label>
-      <input type="text" id="groupId" placeholder="예: 7">
 
       <button class="btn btn-primary" id="startBtn" disabled>시작하기</button>
     </div>
@@ -308,10 +278,6 @@
         </div>
       </div>
 
-      <div id="roleInfo" style="display:none;">
-        <div class="have-lack" id="haveLackBox"></div>
-      </div>
-
       <button class="btn btn-primary" id="toWriteBtn" disabled>내 판단 쓰러 가기</button>
     </div>
   </div>
@@ -325,7 +291,7 @@
       <div class="have-lack" id="writeHaveLackBox"></div>
 
       <p class="sub" style="margin-top:14px;">근데… 이걸로 진짜 상대가 만족할까? ( 응, 만족할 듯 / 뭔가 부족할 듯 )
-      한번 생각해보고 아래 세 칸을 채워봐. 짝이 아직 못 봐도 되니까 솔직하게 네 생각대로 써!</p>
+      한번 생각해보고 아래 세 칸을 채워봐.</p>
 
       <button type="button" class="hint-toggle" id="hintToggle">💡 막히면 힌트 보기</button>
       <div class="hint-box" id="hintBox">
@@ -346,75 +312,32 @@
       <textarea id="whyTxt" placeholder="예: 왜냐하면 나는 ___이 부족한데, 상대는 그걸 갖고 있으니까."></textarea>
 
       <div class="next-step-note">
-        📌 제출하면 <b>짝의 답과 비교하는 화면</b>으로 넘어가. 짝이 아직 다 안 썼으면 잠깐
-        기다리는 화면이 뜰 거야 — 그땐 조용히 기다리거나, 짝한테 다 썼는지 살짝 확인해줘.
+        📌 다음 화면에서 "반대 입장은 실제로 어땠는지"를 바로 보여줄 거야 —
+        네 예상이랑 비교해보자.
       </div>
 
-      <button class="btn btn-primary" id="submitJudgmentBtn" disabled>제출하고 짝 답 보러 가기</button>
+      <button class="btn btn-primary" id="toRevealBtn" disabled>결과 확인하러 가기</button>
     </div>
   </div>
 
-  <!-- 화면 4: 짝 기다리는 중 -->
-  <div class="screen" id="screen-waiting">
-    <div class="card waiting-box">
-      <div class="spin">⏳</div>
-      <h3>짝이 아직 제출 안 했나봐</h3>
-      <p class="sub">짝도 다 쓰고 제출하면 아래 버튼을 눌러서 다시 확인해봐.<br>
-      기다리는 동안 조용히 있거나, 짝한테 "다 썼어?" 살짝 물어봐도 좋아.</p>
-      <button class="btn btn-outline" id="refreshBtn">다시 확인하기</button>
-    </div>
-  </div>
-
-  <!-- 화면 5: 비교 + 실제 역사 + 확장질문 -->
-  <div class="screen" id="screen-compare">
+  <!-- 화면 4: 반대 입장 실제 역사 공개 + 비교 + 전체 역사 + 확장질문 -->
+  <div class="screen" id="screen-reveal">
     <div class="card">
-      <div class="info-box">
-        📢 <b>짝이랑 소리 내어 확인해보기</b> — 아래 두 사람 답을 짝이랑 번갈아 소리 내서
-        읽어봐. "나는 너한테 ○○을 줄게" / "나는 ○○을 받고 싶어" 이렇게.
-      </div>
-      <h2>내 답 vs 짝 답</h2>
-      <div class="compare-block" id="myAnswerBlock"></div>
-      <div class="compare-block" id="partnerAnswerBlock"></div>
-    </div>
+      <span class="badge-chip">반대 입장의 실제 역사</span>
+      <h2 id="revealTitle">반대 입장은 실제로 어땠을까?</h2>
+      <div class="reveal-block" id="revealText"></div>
 
-    <div class="card">
-      <h2>거래가 맞아떨어질까?</h2>
-      <p class="sub">역할이 다르니까 "생각이 같다/다르다"가 아니라, <b>서로 원하는 게 맞아떨어지는지</b>를 봐야 해.</p>
-
-      <div class="match-row">
-        <div class="match-side">
-          <div class="match-tag">내가 줄 것</div>
-          <div class="match-txt" id="matchRow1My"></div>
-        </div>
-        <div class="match-arrow">↕</div>
-        <div class="match-side">
-          <div class="match-tag">짝이 받고 싶어하는 것</div>
-          <div class="match-txt" id="matchRow1Partner"></div>
-        </div>
-      </div>
-      <div class="match-row">
-        <div class="match-side">
-          <div class="match-tag">내가 받고 싶은 것</div>
-          <div class="match-txt" id="matchRow2My"></div>
-        </div>
-        <div class="match-arrow">↕</div>
-        <div class="match-side">
-          <div class="match-tag">짝이 줄 것</div>
-          <div class="match-txt" id="matchRow2Partner"></div>
-        </div>
-      </div>
-
-      <h3>이 거래, 성사될 것 같아?</h3>
+      <h3>네가 예상한 거래, 실제 상황이랑 비슷했어?</h3>
       <div class="same-diff">
-        <button id="btnMatch" data-v="성사될 것 같다">성사될 것 같아</button>
-        <button id="btnNoMatch" data-v="안 될 것 같다">안 될 것 같아</button>
+        <button id="btnSame" data-v="비슷했다">비슷했어</button>
+        <button id="btnDiff" data-v="달랐다">달랐어</button>
       </div>
       <label>왜 그렇게 생각했어? (꼭 적어줘)</label>
-      <textarea id="matchReasonTxt" placeholder="예: 내가 주려는 거랑 짝이 원하는 게 얼추 맞아서 / 서로 원하는 게 완전히 달라서"></textarea>
+      <textarea id="compareReasonTxt" placeholder="예: 내가 예상한 거랑 실제 상황이 거의 맞아서 / 전혀 다른 이유였어서"></textarea>
     </div>
 
     <div class="card">
-      <span class="badge-chip">실제 역사</span>
+      <span class="badge-chip">실제 역사 전체</span>
       <h2>실제로는 이런 거래가 있었어</h2>
       <div class="result-timeline">
         <div class="result-item">
@@ -441,17 +364,17 @@
     </div>
 
     <div class="card">
-      <span class="badge-chip">확장 질문</span>
+      <span class="badge-chip">확장 질문 (선택)</span>
       <h2>오늘날에도 이런 "주고받기" 본 적 있어?</h2>
       <p class="sub">종교가 아니어도 괜찮아 — 정치인과 지지 세력, 기업과 정부처럼
-      서로 부족한 걸 채워주며 손잡는 모습, 떠오르는 거 있어?</p>
-      <textarea id="extendTxt" placeholder="짧게라도 한 가지 예를 적어봐"></textarea>
+      서로 부족한 걸 채워주며 손잡는 모습, 떠오르는 거 있어? (안 떠오르면 비워둬도 돼)</p>
+      <textarea id="extendTxt" placeholder="짧게라도 한 가지 예를 적어봐 (선택)"></textarea>
 
       <button class="btn btn-primary" id="finalSubmitBtn" disabled>최종 제출하기</button>
     </div>
   </div>
 
-  <!-- 화면 6: 완료 -->
+  <!-- 화면 5: 완료 -->
   <div class="screen" id="screen-done">
     <div class="card final-msg">
       <div class="rank">🏰</div>
@@ -475,7 +398,7 @@
  * CONFIG — 배포 시 이 두 값만 채우면 됨
  * ════════════════════════════════════════════════════════ */
 const CONFIG = {
-  SHEET_WEBAPP_URL: "여기에_웹앱_URL_붙여넣기",   // backend_v7.gs 배포 URL (2학기 포털과 동일한 URL 재사용)
+  SHEET_WEBAPP_URL: "여기에_웹앱_URL_붙여넣기",   // backend_v10.gs 배포 URL (2학기 포털과 동일한 URL 재사용)
   GAME_NAME: "주제13_교회와왕"                      // config.js CURRICULUM의 id와 반드시 일치
 };
 
@@ -492,6 +415,22 @@ const ROLE_INFO = {
   }
 };
 
+/* 반대 입장의 실제 역사 — 학생이 고르지 않은 쪽의 실제 상황을 공개 */
+const OPPOSITE_REVEAL = {
+  "교황": { // 교황을 선택한 학생에게 보여줄 "프랑크 왕"의 실제 상황
+    title: "네가 고르지 않은 쪽 — 프랑크 왕은 실제로 이랬어",
+    text: "프랑크 왕국은 다른 게르만 왕국들과 달리 일찍부터 크리스트교를 받아들였어. " +
+      "732년에는 <b>카롤루스 마르텔</b>이 이슬람 세력을 물리쳐 서유럽 크리스트교 세계를 지켜냈지. " +
+      "그런데 그의 아들이 왕이 되려 할 때, 군사력은 있어도 <b>'진짜 정당한 왕'이라는 인정</b>은 없었어."
+  },
+  "프랑크 왕": { // 프랑크 왕을 선택한 학생에게 보여줄 "교황"의 실제 상황
+    title: "네가 고르지 않은 쪽 — 교황은 실제로 이랬어",
+    text: "교황은 유럽 곳곳에 퍼진 교회를 이끌고 있었지만, 정작 자신을 지켜줄 <b>군사력이 없었어</b>. " +
+      "게다가 비잔티움 황제가 계속 교회 문제에 간섭하려 했지. " +
+      "교황에게는 <b>보호해줄 힘을 가진 세력</b>이 절실했어."
+  }
+};
+
 let selectedRole = null;
 let myAnswer = { give:"", want:"", why:"" };
 
@@ -505,13 +444,12 @@ function showScreen(id){
 /* ── 화면 0: 입력 검증 ── */
 const studentId = document.getElementById("studentId");
 const studentName = document.getElementById("studentName");
-const groupIdInput = document.getElementById("groupId");
 const startBtn = document.getElementById("startBtn");
 
 function checkStart(){
-  startBtn.disabled = !(studentId.value.trim() && studentName.value.trim() && groupIdInput.value.trim());
+  startBtn.disabled = !(studentId.value.trim() && studentName.value.trim());
 }
-[studentId, studentName, groupIdInput].forEach(el=>el.addEventListener("input", checkStart));
+[studentId, studentName].forEach(el=>el.addEventListener("input", checkStart));
 
 startBtn.addEventListener("click", ()=> showScreen("screen-question"));
 document.getElementById("toRoleBtn").addEventListener("click", ()=> showScreen("screen-role"));
@@ -522,13 +460,6 @@ document.querySelectorAll(".role-card").forEach(card=>{
     document.querySelectorAll(".role-card").forEach(c=>c.classList.remove("selected"));
     card.classList.add("selected");
     selectedRole = card.dataset.role;
-
-    const info = ROLE_INFO[selectedRole];
-    document.getElementById("roleInfo").style.display = "block";
-    document.getElementById("haveLackBox").innerHTML = `
-      <div class="have-box"><b>내가 가진 것</b>${info.have}</div>
-      <div class="lack-box"><b>내가 부족한 것</b>${info.lack}</div>
-    `;
     document.getElementById("toWriteBtn").disabled = false;
   });
 });
@@ -553,126 +484,68 @@ document.getElementById("hintToggle").addEventListener("click", ()=>{
 const giveTxt = document.getElementById("giveTxt");
 const wantTxt = document.getElementById("wantTxt");
 const whyTxt = document.getElementById("whyTxt");
-const submitJudgmentBtn = document.getElementById("submitJudgmentBtn");
+const toRevealBtn = document.getElementById("toRevealBtn");
 
 function checkWrite(){
   const ok = giveTxt.value.trim().length >= 8 &&
              wantTxt.value.trim().length >= 8 &&
              whyTxt.value.trim().length >= 8;
-  submitJudgmentBtn.disabled = !ok;
+  toRevealBtn.disabled = !ok;
 }
 [giveTxt, wantTxt, whyTxt].forEach(el=>el.addEventListener("input", checkWrite));
 
-/* ── 1차 제출: 개별 판단 ── */
-submitJudgmentBtn.addEventListener("click", async ()=>{
-  submitJudgmentBtn.disabled = true;
-  submitJudgmentBtn.textContent = "제출 중...";
-
+/* ── 화면 3 → 4: 서버 통신 없이 바로 전환 (네트워크 대기 없음) ── */
+toRevealBtn.addEventListener("click", ()=>{
   myAnswer = {
     give: giveTxt.value.trim(),
     want: wantTxt.value.trim(),
     why: whyTxt.value.trim()
   };
-  const judgmentText = `줄 것: ${myAnswer.give}\n받고 싶은 것: ${myAnswer.want}\n이유: ${myAnswer.why}`; // 콘솔 로그용 참고 텍스트
 
-  const payload = {
-    stage: "judgment",
-    gameName: CONFIG.GAME_NAME,
-    studentId: studentId.value.trim(),
-    studentName: studentName.value.trim(),
-    groupId: groupIdInput.value.trim(),
-    role: selectedRole,
-    give: myAnswer.give,
-    want: myAnswer.want,
-    why: myAnswer.why
-  };
+  const reveal = OPPOSITE_REVEAL[selectedRole];
+  document.getElementById("revealTitle").textContent = reveal.title;
+  document.getElementById("revealText").innerHTML = reveal.text;
 
-  try{
-    if(CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0){
-      await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
-    }
-  }catch(err){
-    console.log("전송 실패(콘솔 확인용):", err);
-  }
-
-  fetchPartner();
+  showScreen("screen-reveal");
 });
 
-let partnerData = null;
-
-/* ── 짝 답 조회 ── */
-async function fetchPartner(){
-  showScreen("screen-waiting");
-  document.getElementById("refreshBtn").disabled = false;
-  document.getElementById("refreshBtn").textContent = "다시 확인하기";
-
-  if(!(CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0)){
-    return; // URL 미설정 시 대기 화면에 머묾 (테스트 환경)
-  }
-
-  try{
-    const url = `${CONFIG.SHEET_WEBAPP_URL}?mode=group&gameName=${encodeURIComponent(CONFIG.GAME_NAME)}&groupId=${encodeURIComponent(groupIdInput.value.trim())}&studentId=${encodeURIComponent(studentId.value.trim())}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(data.result === "success" && data.partners && data.partners.length > 0){
-      partnerData = data.partners[0];
-      renderCompareScreen();
-      showScreen("screen-compare");
-    }
-  }catch(err){
-    console.log("짝 답 조회 실패:", err);
-  }
-}
-document.getElementById("refreshBtn").addEventListener("click", fetchPartner);
-
-function renderCompareScreen(){
-  document.getElementById("myAnswerBlock").innerHTML =
-    `<div class="who">나 (${selectedRole})</div><div class="txt">${escapeHtml(`줄 것: ${myAnswer.give}\n받고 싶은 것: ${myAnswer.want}\n이유: ${myAnswer.why}`)}</div>`;
-  document.getElementById("partnerAnswerBlock").innerHTML =
-    `<div class="who">짝 (${escapeHtml(partnerData.role)})</div><div class="txt">${escapeHtml(`줄 것: ${partnerData.give}\n받고 싶은 것: ${partnerData.want}\n이유: ${partnerData.why}`)}</div>`;
-
-  document.getElementById("matchRow1My").textContent = myAnswer.give || "(내용 없음)";
-  document.getElementById("matchRow1Partner").textContent = partnerData.want || "(내용 없음)";
-  document.getElementById("matchRow2My").textContent = myAnswer.want || "(내용 없음)";
-  document.getElementById("matchRow2Partner").textContent = partnerData.give || "(내용 없음)";
-}
-
-/* ── 화면 5: 거래 성사 여부 판단 ── */
-let tradeMatch = "";
-document.getElementById("btnMatch").addEventListener("click", ()=>{
-  tradeMatch = "성사될 것 같다";
-  document.getElementById("btnMatch").classList.add("active");
-  document.getElementById("btnNoMatch").classList.remove("active");
+/* ── 화면 4: 비슷했다/달랐다 ── */
+let sameOrDiff = "";
+document.getElementById("btnSame").addEventListener("click", ()=>{
+  sameOrDiff = "비슷했다";
+  document.getElementById("btnSame").classList.add("active");
+  document.getElementById("btnDiff").classList.remove("active");
   checkFinal();
 });
-document.getElementById("btnNoMatch").addEventListener("click", ()=>{
-  tradeMatch = "안 될 것 같다";
-  document.getElementById("btnNoMatch").classList.add("active");
-  document.getElementById("btnMatch").classList.remove("active");
+document.getElementById("btnDiff").addEventListener("click", ()=>{
+  sameOrDiff = "달랐다";
+  document.getElementById("btnDiff").classList.add("active");
+  document.getElementById("btnSame").classList.remove("active");
   checkFinal();
 });
 
-const matchReasonTxt = document.getElementById("matchReasonTxt");
+const compareReasonTxt = document.getElementById("compareReasonTxt");
 const extendTxt = document.getElementById("extendTxt");
-[matchReasonTxt, extendTxt].forEach(el=>el.addEventListener("input", checkFinal));
+[compareReasonTxt, extendTxt].forEach(el=>el.addEventListener("input", checkFinal));
 
 function checkFinal(){
-  const reasonOk = matchReasonTxt.value.trim().length >= 6;
-  const extendOk = extendTxt.value.trim().length >= 4;
-  document.getElementById("finalSubmitBtn").disabled = !(tradeMatch && reasonOk && extendOk);
+  const reasonOk = compareReasonTxt.value.trim().length >= 6;
+  document.getElementById("finalSubmitBtn").disabled = !(sameOrDiff && reasonOk);
 }
 
-/* ── 2차(최종) 제출 ── */
+/* ── 최종(유일한) 제출 ── */
 document.getElementById("finalSubmitBtn").addEventListener("click", async ()=>{
   const btn = document.getElementById("finalSubmitBtn");
   btn.disabled = true;
   btn.textContent = "제출 중...";
 
+  const extendVal = extendTxt.value.trim();
+
   const finalReflection =
+    `[역할] ${selectedRole}\n` +
     `[내 판단] 줄 것: ${myAnswer.give} / 받고 싶은 것: ${myAnswer.want} / 이유: ${myAnswer.why}\n` +
-    `[짝 판단] 줄 것: ${partnerData.give} / 받고 싶은 것: ${partnerData.want}\n` +
-    `[거래 성사 판단] ${tradeMatch} — ${matchReasonTxt.value.trim()}\n` +
-    `[확장 질문] ${extendTxt.value.trim()}`;
+    `[반대 입장 실제 역사와 비교] ${sameOrDiff} — ${compareReasonTxt.value.trim()}` +
+    (extendVal ? `\n[확장 질문] ${extendVal}` : "");
 
   const padletText =
     `[주제13] 교회와 왕, 무엇을 주고받았을까?\n` +
@@ -680,22 +553,23 @@ document.getElementById("finalSubmitBtn").addEventListener("click", async ()=>{
     `내가 상대에게 줄 것: ${myAnswer.give}\n` +
     `내가 상대에게 받고 싶은 것: ${myAnswer.want}\n` +
     `이유: ${myAnswer.why}\n\n` +
-    `이 거래는 ${tradeMatch} — ${matchReasonTxt.value.trim()}\n\n` +
-    `오늘날 비슷한 사례: ${extendTxt.value.trim()}`;
+    `반대 입장의 실제 역사와 ${sameOrDiff} — ${compareReasonTxt.value.trim()}` +
+    (extendVal ? `\n\n오늘날 비슷한 사례: ${extendVal}` : "");
 
   const payload = {
     gameName: CONFIG.GAME_NAME,
     studentId: studentId.value.trim(),
     studentName: studentName.value.trim(),
-    groupId: groupIdInput.value.trim(),
-    choiceSummary: `역할: ${selectedRole} / 거래 ${tradeMatch}`,
+    choiceSummary: `역할: ${selectedRole} / 예상과 실제가 ${sameOrDiff}`,
     diffSummary: "",
     reflection: finalReflection,
     choicesJson: JSON.stringify({
-      stage: "final",
       role: selectedRole,
-      tradeMatch: tradeMatch,
-      matchReason: matchReasonTxt.value.trim(),
+      give: myAnswer.give,
+      want: myAnswer.want,
+      why: myAnswer.why,
+      compareResult: sameOrDiff,
+      compareReason: compareReasonTxt.value.trim(),
       extend: extendTxt.value.trim()
     })
   };
@@ -734,12 +608,6 @@ document.getElementById("copyBtn").addEventListener("click", async ()=>{
     box.select();
   }
 });
-
-function escapeHtml(str){
-  return String(str)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/\n/g,"<br>");
-}
 </script>
 
 </body>
