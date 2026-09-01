@@ -576,10 +576,21 @@ document.getElementById("finalSubmitBtn").addEventListener("click", async ()=>{
 
   try{
     if(CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0){
-      await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
+      const res = await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
+      if(!res.ok){
+        throw new Error(`서버 응답 오류 (status ${res.status})`);
+      }
+      const json = await res.json();
+      if(!json || json.result !== "success"){
+        throw new Error((json && json.message) || "백엔드가 저장 실패를 반환함");
+      }
     }
   }catch(err){
     console.log("전송 실패(콘솔 확인용):", err);
+    btn.disabled = false;
+    btn.textContent = "다시 제출하기";
+    alert("기록 저장에 실패했어. 인터넷 연결을 확인하고 다시 눌러줘!");
+    return; // 저장이 확인 안 됐으니 결과 화면(복사하기 버튼)을 보여주지 않는다.
   }
 
   showScreen("screen-done");
